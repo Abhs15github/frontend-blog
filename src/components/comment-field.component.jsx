@@ -36,6 +36,7 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
             data.commented_by = { personal_info: { username, profile_img, fullname } }
 
             let newCommentArr;
+            
             if(replyingTo){
 
                 commentsArr[index].children.push(data._id);
@@ -50,15 +51,15 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
                 newCommentArr = commentsArr
 
                 setReplying(false);
-                
-                
+
+
 
             }else{
                 data.childrenLevel = 0;
                 newCommentArr = [ data, ...commentsArr ];
             }
 
-  
+
 
             let parentCommentIncrementVal = replyingTo ? 0 :  1;
 
@@ -80,7 +81,7 @@ const CommentField = ({ action, index = undefined, replyingTo = undefined, setRe
         <button className="btn-dark px-10" onClick={handleComment} style={{ backgroundColor: '#6495ed', color: 'white' }}> {action} </button>
 
         </>
-       
+
     )
 }
 

@@ -29,6 +29,7 @@ const SearchPage = () => {
             setBlog(formatedData);
         })
         .catch((err) => {
+            
             console.log(err)
         });
     }

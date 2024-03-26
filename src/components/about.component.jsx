@@ -3,7 +3,7 @@ import { getFullDay } from "../common/date";
 const AboutUser = ({ className, bio, social_links, joinedAt }) => {
     return (
         <div className={"md:w-[90%] md:mt-7 " + className}>
-            <p className="text-xl leading-7">{ bio.length ? bio : "User has not much to tell about "} </p>
+            {/* <p className="text-xl leading-7">{ bio.length ? bio : "User has not much to tell about "} </p> */}
 
             <div className="flex gap-x-7 gap-y-2 flex-wrap my-7 items-center text-dark-grey">
 

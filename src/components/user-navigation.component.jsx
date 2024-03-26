@@ -28,9 +28,9 @@ const UserNavigationPanel = () => {
                             Profile
                          </Link>
 
-                         <Link to="/dashboard/blogs" className="link pl-8 py-4">
+                         {/* <Link to="/dashboard/blogs" className="link pl-8 py-4">
                             Dashboard
-                         </Link>
+                         </Link> */}
 
                          <Link to="/settings/edit-profile" className="link pl-8 py-4">
                             Settings
@@ -40,7 +40,7 @@ const UserNavigationPanel = () => {
 
                          <button className="text-left p-4 hover:bg-grey w-full pl-8 py-4" onClick={signOutUser}> 
                          <h1 className="font-bold text-xl mg-1"> Sign Out</h1>
-                         <p className="text-dark-grey">@{username}</p>
+                         <p className="text-d ark-grey">@{username}</p>
                          </button>
                          {/* <p> @{username}</p> */}
 

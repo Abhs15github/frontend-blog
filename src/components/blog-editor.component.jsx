@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import logo from "../imgs/original blog logo.png";
+// import logo from "../imgs/jbb-blog.png";
 import AnimationWrapper from "../common/page-animation";
 import defaultBanner from "../imgs/blog banner.png";
 import { EditorContext } from "../pages/editor.pages";
@@ -10,6 +11,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { tools } from "./tools.component";
 import axios from "axios";
 import { UserContext } from "../App";
+import { color } from "framer-motion";
 
 const BlogEditor = () => {
 
@@ -155,19 +157,21 @@ const BlogEditor = () => {
         <Link to="/" className="flex-none w-50">
           <img
             src={logo}
-            style={{ width: '13vw', height: 'auto' }}
+            style={{ width: '13vw', height: 'auto' }}           
             alt="Logo"
           />
         </Link>
 
-        <p className="max-md:hidden text-white line-clamp-1 w-full">
-          {blog.title.length ? blog.title : "New Blog"}
+        <p className="max-md:hidden text-white line-clamp-1 w-full" style={{color: '#ffffff'} }>
+          {blog.title.length ? blog.title : "Your topic"}
         </p>
 
         <div className="flex gap-4 ml-auto">
-          <button className="btn-dark py-2" onClick={handlePublishEvent}>Publish</button>
+          {/* <button className="btn-dark py-2" onClick={handlePublishEvent}>Publish</button> */}
+          <button className="btn-dark py-2" onClick={handlePublishEvent} style={{ backgroundColor: 'white', color: 'black' }}>Publish</button>
+          
 
-          <button className="btn-light py-2" onClick={handleSaveDraft}>Save Draft</button>
+          {/* <button className="btn-light py-2" onClick={handleSaveDraft}>Save Draft</button> */}
         </div>
       </nav>
       <Toaster />

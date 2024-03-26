@@ -9,43 +9,70 @@ import NoDataMessage from '../components/nodata.component';
 import { filterPaginationData } from '../common/filter-pagination-data';
 import LoadMoreDataBtn from '../components/load-more.component';
 
-// import { activeTabRef } from '../components/inpage-navigation.component';
-
 const HomePage = () => {
     const [blogs, setBlog] = useState(null);
     const [trendingBlogs, setTrendingBlogs] = useState(null);
     const [pageState, setPageState] = useState("home");
     const [loading, setLoading] = useState(false);
+    const [quote, setQuote] = useState('');
 
     const categories = [
-        "programming", "technology", "science", "health", "finance","sports",
-        "travel", "food", "fitness", "lifestyle", "education", "bollywood"
+        "programming", "technology", "science", "health", "finance", "sports",
+        "travel", "food", "fitness", "lifestyle", "education", "bollywood", "Recently",
+        "business", "art", "music", "fashion", "photography", "design", "books", "politics"
     ];
 
-    const fetchLatestBlogs = ({ page = 1 }) => {
-       
-        axios
-        .post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blogs", { page })
-            .then( async ({ data }) => {
-            console.log(data.blogs);
+    // List of motivational quotes
+    const quotes = [
+        "Success is not final, failure is not fatal: It is the courage to continue that counts. - Winston Churchill",
+        "Hardships often prepare ordinary people for an extraordinary destiny. - C.S. Lewis",
+        "Believe you can and you're halfway there. - Theodore Roosevelt",
+        "The only limit to our realization of tomorrow will be our doubts of today. - Franklin D. Roosevelt",
+        "The way to get started is to quit talking and begin doing. - Walt Disney",
+        "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
+        "The best time to plant a tree was 20 years ago. The second best time is now. - Chinese Proverb",
+        "The only way to achieve the impossible is to believe it is possible. - Charles Kingsleigh",
+        "Believe in yourself. You are braver than you think, more talented than you know, and capable of more than you imagine. - Roy T. Bennett"
+    ];
 
-               let formatedData = await filterPaginationData({
-                state: blogs,
-                data: data.blogs,
-                page,
-                countRoute: "/all-latest-blogs-count"
-               })
-                console.log(formatedData)
+    // Function to select a random quote
+    const getRandomQuote = () => {
+        const randomIndex = Math.floor(Math.random() * quotes.length);
+        return quotes[randomIndex];
+    };
+
+    useEffect(() => {
+        setQuote(getRandomQuote()); // Set a random quote when the component mounts or when the page reloads
+
+        activeTabRef.current.click();
+        if (pageState == "home") {
+            fetchLatestBlogs({ page: 1 });
+        } else {
+            fetchBlogsByCategory({ page: 1 });
+        }
+
+        if (!trendingBlogs) {
+            fetchTrendingBlogs();
+        }
+    }, [pageState]);
+
+    const fetchLatestBlogs = ({ page = 1 }) => {
+        axios
+            .post(import.meta.env.VITE_SERVER_DOMAIN + "/latest-blogs", { page })
+            .then(async ({ data }) => {
+                let formatedData = await filterPaginationData({
+                    state: blogs,
+                    data: data.blogs,
+                    page,
+                    countRoute: "/all-latest-blogs-count"
+                });
                 setBlog(formatedData);
-               
             })
             .catch(err => {
                 console.log(err);
                 setLoading(false);
             });
     };
-
-
 
     const fetchTrendingBlogs = () => {
         setLoading(true);
@@ -59,8 +86,8 @@ const HomePage = () => {
                 setLoading(false);
             });
     };
-    
-       const loadBlogByCategory = (e) => {
+
+    const loadBlogByCategory = (e) => {
         let category = e.target.innerText.toLowerCase();
         setBlog(null);
         if (pageState == category) {
@@ -68,108 +95,93 @@ const HomePage = () => {
             return;
         }
 
-       setPageState(category)
-        // Load blogs by category
+        setPageState(category);
     };
-
 
     const fetchBlogsByCategory = ({ page = 1 }) => {
         axios
             .post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs", { tag: pageState, page })
-            .then( async ({ data }) => {
-
+            .then(async ({ data }) => {
                 let formatedData = await filterPaginationData({
                     state: blogs,
                     data: data.blogs,
                     page,
                     countRoute: "/search-blogs-count",
                     data_to_send: { tag: pageState }
-                })
+                });
                 setBlog(formatedData);
             })
             .catch((err) => {
                 console.log(err);
             });
-    }
-    
-    useEffect(() => {
-        activeTabRef.current.click();
-        if (pageState == "home") {
-            fetchLatestBlogs({ page: 1 });
-        } else {
-            fetchBlogsByCategory({ page: 1 })
-        }
-    
-        if (!trendingBlogs) {
-            fetchTrendingBlogs();
-        }
-    }, [pageState]);
-    
+    };
 
     return (
-        <AnimationWrapper>
-            <section className="h-cover flex justify-center gap-10">
-                <div className="w-full">
-                    <InpageNavigation routes={[ pageState, "trending blogs"]} defaultHidden={["trending blogs"]}>
-                        <>
-                        {
-                            blogs == null ? ( <Loader /> )  : ( 
-                            blogs.results.length ?    
-                            blogs.results.map((blog, i) => {
-                                
-                                return ( 
-                                <AnimationWrapper transition={{ duration: 1, delay: i*.1 }} key={i}>
-                                    <BlogPostCard content={blog} author={blog.author.personal_info} />
-                                </AnimationWrapper>
-                            );
-                        })
-                        : <NoDataMessage message="No blog published, well you can start!" />
-                        )}
-                        <LoadMoreDataBtn state={blogs} fetchDataFun={(pageState == "home" ? fetchLatestBlogs : fetchBlogsByCategory )} />
+        <>
+        <div className="quote-section" style={{ textAlign: 'center', marginTop: '20px' }}>
+                <p className="quote" style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{quote}</p>
+            </div>
+            <AnimationWrapper>
+                <section className="h-cover flex justify-center gap-10" style={{ background: '#FFFFFF' }}>
+                    <div className="w-full">
+                        <InpageNavigation routes={[pageState, "trending blogs"]} defaultHidden={["trending blogs"]}>
+                            <>
+                                {blogs == null ? (<Loader />) : (
+                                    blogs.results.length ?
+                                        blogs.results.map((blog, i) => (
+                                            <AnimationWrapper transition={{ duration: 1, delay: i * .1 }} key={i}>
+                                                <BlogPostCard content={blog} author={blog.author.personal_info} />
+                                            </AnimationWrapper>
+                                        ))
+                                        : <NoDataMessage message="No blog published, well you can start!" />
+                                )}
+                                <LoadMoreDataBtn state={blogs} fetchDataFun={(pageState == "home" ? fetchLatestBlogs : fetchBlogsByCategory)} />
+                            </>
+                            {trendingBlogs == null ? (<Loader />) : (
+                                trendingBlogs.length ?
+                                    trendingBlogs.map((blog, i) => (
+                                        <AnimationWrapper transition={{ duration: 1, delay: i * .1 }} key={i}>
+                                            <MinimalBlogPost blog={blog} index={i} />
+                                        </AnimationWrapper>
+                                    ))
+                                    : <NoDataMessage message="No trending blogs yet" />
+                            )}
+                        </InpageNavigation>
+                    </div>
 
-                        </>
-                        {
-                            trendingBlogs == null ? ( <Loader /> )  : (
-                            trendingBlogs.length ?
-                            trendingBlogs.map((blog, i) => {
-                                return (<AnimationWrapper transition={{ duration: 1, delay: i*.1 }} key={i}>
-                                   <MinimalBlogPost blog={blog} index={i} />
-                                </AnimationWrapper>
-                                );
-                            })
-                        : <NoDataMessage message="No trending blogs yet" />
-                        )}
-                    </InpageNavigation>
-                </div>
+                    <div className='min-w-[40%] lg:min-w-[400px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden'
+                        style={{
+                            // background: 'linear-gradient(135deg, #1c1c1c 0%, #B0E0E6 100%)',
+                            borderRadius: '40px'
+                        }}
+                    >
+                        <div className='flex flex-col gap-10'>
+                            <div>
+                                <h1 className='font-medium text-xl mb-8'> Blogs covering a spectrum of interests</h1>
+                                <div className='flex gap-3 flex-wrap'>
+                                    {categories.map((category, i) => (
+                                        <button onClick={loadBlogByCategory} className={'tag ' + (pageState == category ? " bg-black text-white " : " ")} key={i}>
+                                            {category}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
-                <div className='min-w-[40%] lg:min-w-[400px] max-w-min border-l border-grey pl-8 pt-3 max-md:hidden'>
-                    <div className='flex flex-col gap-10'>
-                        <div>
-                            <h1 className='font-medium text-xl mb-8'> Blogs covering a spectrum of interests</h1>
-                            <div className='flex gap-3 flex-wrap'>
-                                {categories.map((category, i) => (
-                                    <button onClick={loadBlogByCategory} className={'tag ' + (pageState == category ? " bg-black text-white " : " ")} key={i}>
-                                        {category}
-                                    </button>
-                                ))}
+                            <div>
+                                <h1 className='font-medium text-xl mb-8'>Trending <i className="fi fi-rr-signal-bars-good"></i></h1>
+                                {trendingBlogs == null ? <Loader /> :
+                                    trendingBlogs.map((blog, i) => (
+                                        <AnimationWrapper transition={{ duration: 1, delay: i * .1 }} key={i}>
+                                            <MinimalBlogPost blog={blog} index={i} />
+                                        </AnimationWrapper>
+                                    ))
+                                }
                             </div>
                         </div>
-
-                        <div>
-                            <h1 className='font-medium text-xl mb-8'>Trending <i className="fi fi-rr-signal-bars-good"></i></h1>
-                            {
-                                trendingBlogs == null ? <Loader /> :
-                                trendingBlogs.map((blog, i) => {
-                                    return <AnimationWrapper transition={{ duration: 1, delay: i*.1 }} key={i}>
-                                        <MinimalBlogPost blog={blog} index={i} />
-                                    </AnimationWrapper>
-                                })
-                            }
-                        </div>
                     </div>
-                </div>
-            </section>
-        </AnimationWrapper>
+                </section>
+            </AnimationWrapper>
+        </>
     )
 };
 

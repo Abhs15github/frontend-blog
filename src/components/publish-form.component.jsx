@@ -9,7 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 
 const PublishForm = () => {
-    let characterLimit = 200;
+    let characterLimit = 250;
     let tagLimit = 10;
 
     let { blog_id } = useParams();
